@@ -1,8 +1,9 @@
 const express = require('express');
-const { body } = require('express-validator');
 const UserController = require('../controllers/UserController');
-const authMiddleware = require('../middleware/authentication');
-const rateLimiter = require('../middleware/rateLimiter');
+const authMiddleware = require('../middlewares/authentication');
+const rateLimiter = require('../middlewares/rateLimiter');
+const { validate } = require('../middlewares/validate');
+const { updateProfileSchema } = require('../schemas/user.schema');
 
 const router = express.Router();
 
@@ -25,18 +26,7 @@ router.get('/me', rateLimiter.standardLimiter, UserController.getProfile);
 router.patch(
     '/me',
     rateLimiter.standardLimiter,
-    [
-        body('email')
-            .optional()
-            .isEmail()
-            .normalizeEmail()
-            .withMessage('Valid email is required'),
-        body('username')
-            .optional()
-            .trim()
-            .notEmpty()
-            .withMessage('User name cannot be empty'),
-    ],
+    validate(updateProfileSchema),
     UserController.updateProfile,
 );
 

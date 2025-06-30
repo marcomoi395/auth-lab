@@ -1,9 +1,16 @@
 const express = require('express');
-const { body } = require('express-validator');
 const AdminController = require('../controllers/AdminController');
-const authMiddleware = require('../middleware/authentication');
-const roleMiddleware = require('../middleware/authorization');
-const rateLimiter = require('../middleware/rateLimiter');
+const authMiddleware = require('../middlewares/authentication');
+const roleMiddleware = require('../middlewares/authorization');
+const rateLimiter = require('../middlewares/rateLimiter');
+const { validate } = require('../middlewares/validate');
+const {
+    updateUserSchema,
+    deleteUserSchema,
+    getUserByIdSchema,
+    searchUsersSchema,
+    getAllUsersSchema,
+} = require('../schemas/admin.schema');
 
 const router = express.Router();
 
@@ -23,12 +30,18 @@ router.use(authMiddleware.authenticateToken);
 router.use(roleMiddleware.requireRole('admin'));
 
 // Get all users (with pagination, filtering, search)
-router.get('/users', rateLimiter.standardLimiter, AdminController.getAllUsers);
+router.get(
+    '/users',
+    rateLimiter.standardLimiter,
+    validate(getAllUsersSchema),
+    AdminController.getAllUsers,
+);
 
 // Search users
 router.get(
     '/users/search',
     rateLimiter.standardLimiter,
+    validate(searchUsersSchema),
     AdminController.searchUsers,
 );
 
@@ -36,6 +49,7 @@ router.get(
 router.get(
     '/users/:id',
     rateLimiter.standardLimiter,
+    validate(getUserByIdSchema),
     AdminController.getUserById,
 );
 
@@ -43,26 +57,7 @@ router.get(
 router.patch(
     '/users/:id',
     rateLimiter.standardLimiter,
-    [
-        body('email')
-            .optional()
-            .isEmail()
-            .normalizeEmail()
-            .withMessage('Valid email is required'),
-        body('username')
-            .optional()
-            .trim()
-            .notEmpty()
-            .withMessage('Full name cannot be empty'),
-        body('role')
-            .optional()
-            .isIn(['admin', 'user'])
-            .withMessage('Invalid role'),
-        body('status')
-            .optional()
-            .isIn(['active', 'inactive', 'suspended'])
-            .withMessage('Invalid status'),
-    ],
+    validate(updateUserSchema),
     AdminController.updateUser,
 );
 
@@ -70,6 +65,7 @@ router.patch(
 router.delete(
     '/users/:id',
     rateLimiter.standardLimiter,
+    validate(deleteUserSchema),
     AdminController.deleteUser,
 );
 

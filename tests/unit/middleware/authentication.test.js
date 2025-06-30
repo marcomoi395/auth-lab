@@ -1,4 +1,6 @@
-const { authenticateToken } = require('../../../src/middleware/authentication');
+const {
+    authenticateToken,
+} = require('../../../src/middlewares/authentication');
 const tokenService = require('../../../src/services/tokenService');
 const Role = require('../../../src/models/Role');
 const { AuthenticationError } = require('../../../src/utils/errors');

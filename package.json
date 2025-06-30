@@ -9,7 +9,7 @@
         "lint": "eslint . --ext .js,.mjs,.cjs",
         "lint:fix": "eslint . --ext .js,.mjs,.cjs --fix",
         "format": "prettier --write .",
-        "start": "node server.js",
+        "start": "nodemon --inspect server.js",
         "dev": "nodemon --inspect server.js",
         "precommit": "npm run lint && npm run format && npm run test"
     },
@@ -31,7 +31,8 @@
         "mongoose": "^8.15.2",
         "morgan": "^1.10.0",
         "nodemailer": "^7.0.3",
-        "winston": "^3.17.0"
+        "winston": "^3.17.0",
+        "zod": "^3.25.67"
     },
     "devDependencies": {
         "@eslint/js": "^9.29.0",

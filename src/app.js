@@ -19,15 +19,8 @@ require('./dbs/init.mongodb');
 // Init routes
 app.use('', require('./routes'));
 
-// Global error handling middleware
-app.use((req, res, next) => {
-    const error = new Error('Not found');
-    error.status = 404;
-    next(error);
-});
-
-app.use((error, req, res) => {
-    const statusCode = error.statusCode || 5;
+app.use((error, req, res, _next) => {
+    const statusCode = error.statusCode || 500;
     const errorResponse = {
         status: 'error',
         code: statusCode,

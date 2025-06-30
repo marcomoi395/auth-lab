@@ -1,8 +1,14 @@
 const express = require('express');
-const { body } = require('express-validator');
 const AuthController = require('../controllers/AuthController');
-const authMiddleware = require('../middleware/authentication');
-const rateLimiter = require('../middleware/rateLimiter');
+const authMiddleware = require('../middlewares/authentication');
+const rateLimiter = require('../middlewares/rateLimiter');
+const { validate } = require('../middlewares/validate');
+const {
+    registerSchema,
+    loginSchema,
+    logoutSchema,
+    refreshTokenSchema,
+} = require('../schemas/auth.schema');
 
 const router = express.Router();
 
@@ -22,16 +28,7 @@ const router = express.Router();
 router.post(
     '/register',
     rateLimiter.strictLimiter,
-    [
-        body('email')
-            .isEmail()
-            .normalizeEmail()
-            .withMessage('Valid email is required'),
-        body('password')
-            .isLength({ min: 8 })
-            .withMessage('Password must be at least 8 characters'),
-        body('username').trim().notEmpty().withMessage('Username is required'),
-    ],
+    validate(registerSchema),
     AuthController.register,
 );
 
@@ -39,13 +36,7 @@ router.post(
 router.post(
     '/login',
     rateLimiter.authLimiter,
-    [
-        body('email')
-            .isEmail()
-            .normalizeEmail()
-            .withMessage('Valid email is required'),
-        body('password').notEmpty().withMessage('Password is required'),
-    ],
+    validate(loginSchema),
     AuthController.login,
 );
 
@@ -53,7 +44,7 @@ router.post(
 router.post(
     '/logout',
     authMiddleware.authenticateToken,
-    [body('refreshToken').notEmpty().withMessage('Refresh token is required')],
+    validate(logoutSchema),
     AuthController.logout,
 );
 
@@ -61,7 +52,7 @@ router.post(
 router.post(
     '/refresh-token',
     rateLimiter.standardLimiter,
-    [body('refreshToken').notEmpty().withMessage('Refresh token is required')],
+    validate(refreshTokenSchema),
     AuthController.refreshToken,
 );
 

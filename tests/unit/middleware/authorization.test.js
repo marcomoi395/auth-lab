@@ -1,4 +1,4 @@
-const { requireRole } = require('../../../src/middleware/authorization');
+const { requireRole } = require('../../../src/middlewares/authorization');
 const { AuthenticationError } = require('../../../src/utils/errors');
 
 // Mock dependencies
