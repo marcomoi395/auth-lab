@@ -32,12 +32,4 @@ router.patch(
     UserController.updateProfile,
 );
 
-// Search users
-router.get(
-    '/search',
-    rateLimiter.standardLimiter,
-    sanitize.user.search,
-    UserController.searchUsers,
-);
-
 module.exports = router;
