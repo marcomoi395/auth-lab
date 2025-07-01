@@ -3,6 +3,7 @@ const AuthController = require('../controllers/AuthController');
 const authMiddleware = require('../middlewares/authentication');
 const rateLimiter = require('../middlewares/rateLimiter');
 const { validate } = require('../middlewares/validate');
+const sanitize = require('../middlewares/sanitize');
 const {
     registerSchema,
     loginSchema,
@@ -28,6 +29,7 @@ const router = express.Router();
 router.post(
     '/register',
     rateLimiter.strictLimiter,
+    sanitize.auth.register,
     validate(registerSchema),
     AuthController.register,
 );
@@ -36,6 +38,7 @@ router.post(
 router.post(
     '/login',
     rateLimiter.authLimiter,
+    sanitize.auth.login,
     validate(loginSchema),
     AuthController.login,
 );

@@ -99,7 +99,6 @@ class AuthController {
                 data: result,
             }).send(res);
         } catch (err) {
-            console.log('[1]::');
             next(err);
         }
     }

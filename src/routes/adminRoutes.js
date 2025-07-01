@@ -4,6 +4,7 @@ const authMiddleware = require('../middlewares/authentication');
 const roleMiddleware = require('../middlewares/authorization');
 const rateLimiter = require('../middlewares/rateLimiter');
 const { validate } = require('../middlewares/validate');
+const sanitize = require('../middlewares/sanitize');
 const {
     updateUserSchema,
     deleteUserSchema,
@@ -41,6 +42,7 @@ router.get(
 router.get(
     '/users/search',
     rateLimiter.standardLimiter,
+    sanitize.user.search,
     validate(searchUsersSchema),
     AdminController.searchUsers,
 );
@@ -57,6 +59,7 @@ router.get(
 router.patch(
     '/users/:id',
     rateLimiter.standardLimiter,
+    sanitize.admin.updateUser,
     validate(updateUserSchema),
     AdminController.updateUser,
 );
